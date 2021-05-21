@@ -1,0 +1,160 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<form action="" id="formulario">
+    <input type="text" id="first" placeholder="first" value="adimer" required><br>
+    <input type="text" id="last" placeholder="last" value="chambi" required><br>
+    <input type="number" id="born" placeholder="born" value="2000" required><br>
+    <input type="submit">
+</form>
+<table border="1">
+    <thead>
+    <tr>
+        <th>first</th>
+        <th>last</th>
+        <th>born</th>
+        <th>Eliminar</th>
+    </tr>
+    </thead>
+    <tbody id="contenido"></tbody>
+</table>
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-app.js"></script>
+<!--<script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-app.js"></script>-->
+<script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-firestore.js"></script>
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+<script>
+    window.onload=function (){
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyDAi7dwGvaPRnrJLz54m2_jH6PbxqJwAcI",
+            authDomain: "simplecrud-7b9df.firebaseapp.com",
+            projectId: "simplecrud-7b9df",
+            storageBucket: "simplecrud-7b9df.appspot.com",
+            messagingSenderId: "982101341752",
+            appId: "1:982101341752:web:5a26697c900871044698cd"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+        var formulario=document.getElementById('formulario');
+        var first=document.getElementById('first');
+        var last=document.getElementById('last');
+        var born=document.getElementById('born');
+        var contenido=document.getElementById('contenido');
+        formulario.addEventListener('submit',function (e){
+            // console.log(first.value);
+            db.collection("users").add({
+                first: first.value,
+                last: last.value,
+                born: born.value
+            })
+                .then((docRef) => {
+                    console.log("Document written with ID: ", docRef.id);
+                })
+                .catch((error) => {
+                    console.error("Error adding document: ", error);
+                });
+            e.preventDefault();
+            return false;
+        })
+        function click(){
+            console.log('a');
+        }
+        // db.collection("cities").where("state", "==", "CA")
+        //     .onSnapshot((querySnapshot) => {
+        //         var cities = [];
+        //         querySnapshot.forEach((doc) => {
+        //             cities.push(doc.data().name);
+        //         });
+        //         console.log("Current cities in CA: ", cities.join(", "));
+        //     });
+        db.collection("users").onSnapshot((querySnapshot) => {
+            contenido.innerHTML='';
+            let t='';
+            // var cities = [];
+            querySnapshot.forEach((doc) => {
+                t+="<tr>" +
+                    "<td>"+doc.data().first+"</td>" +
+                    "<td>"+doc.data().last+"</td>" +
+                    "<td>"+doc.data().born+"</td>" +
+                    "<td><button data-key='"+doc.id+"' class='borrar'>eliminar</button>"+"</td>" +
+                    "</tr>";
+                contenido.innerHTML=t;
+                var borrar=document.getElementsByClassName('borrar');
+                for (var i=0;i<borrar.length;i++){
+                    borrar[i].addEventListener('click',function (){
+                        var key=this.getAttribute("data-key");
+                        // console.log(key);
+                        db.collection("users").doc(key).delete().then(() => {
+                            console.log("Document successfully deleted!");
+                        }).catch((error) => {
+                            console.error("Error removing document: ", error);
+                        });
+                    },false)
+                }
+                // cities.push(doc.data().name);
+            });
+            // console.log("Current cities in CA: ", cities.join(", "));
+        });
+
+
+        // db.collection("users").get().then((querySnapshot) => {
+        //     contenido.innerHTML='';
+        //     let t='';
+        //     querySnapshot.forEach((doc) => {
+        //         // console.log(`${doc.id} => ${doc.data()}`);
+        //         console.log(doc.data().born)
+        //         t+="<tr>" +
+        //             "<td>"+doc.data().first+"</td>" +
+        //             "<td>"+doc.data().last+"</td>" +
+        //             "<td>"+doc.data().born+"</td>" +
+        //             "<td><button data-key='"+doc.id+"' class='borrar'>eliminar</button>"+"</td>" +
+        //         "</tr>";
+        //         // doc.data().forEach(r=>{
+        //         //     console.log(r);
+        //         // })
+        //
+        //     });
+        //
+        //     contenido.innerHTML=t;
+        //     var borrar=document.getElementsByClassName('borrar');
+        //     for (var i=0;i<borrar.length;i++){
+        //         borrar[i].addEventListener('click',function (){
+        //             var key=this.getAttribute("data-key");
+        //             // console.log(key);
+        //             db.collection("users").doc(key).delete().then(() => {
+        //                 console.log("Document successfully deleted!");
+        //             }).catch((error) => {
+        //                 console.error("Error removing document: ", error);
+        //             });
+        //         },false)
+        //     }
+        // });
+
+        // db.collection("users").add({
+        //     first: "Ada",
+        //     last: "Lovelace",
+        //     born: 1815
+        // })
+        // .then((docRef) => {
+        //     console.log("Document written with ID: ", docRef.id);
+        // })
+        // .catch((error) => {
+        //     console.error("Error adding document: ", error);
+        // });
+    }
+
+</script>
+</body>
+</html>
